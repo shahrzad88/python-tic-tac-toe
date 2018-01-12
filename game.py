@@ -8,7 +8,7 @@ class Board:
     self.positions = [[' ' for i in range(width)] for j in range(height)]
     self.turn = None
     self.last_move = None
-  
+
   def is_empty(self):
     for row in self.positions:
       for cell in row:
