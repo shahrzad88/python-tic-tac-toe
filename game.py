@@ -21,7 +21,6 @@ class Board:
       for cell in row:
         if cell == " ":
           return False
-    print ('board is full')
     return True
 
   def is_horizontal_row(self):
@@ -51,9 +50,9 @@ class Board:
       self.positions[2][2]) or (self.positions[0][2] == \
       self.positions[1][1] == self.positions[2][0])
 
-  def is_finished(self):
+  def is_won(self):
     return self.is_diagonal_row() or self.is_vertical_row() or \
-    self.is_horizontal_row() or self.is_full()
+    self.is_horizontal_row()
 
   def update(self):
     self.positions[self.last_move[0]][self.last_move[1]] = self.turn
@@ -89,28 +88,31 @@ def check_first_player():
     return check_first_player()
   return turn
 
-def ask_move(player_x, player_o, turn):
+def ask_move(player_x, player_o, board):
   prop_player_x = copy.deepcopy(player_x)
   prop_player_o = copy.deepcopy(player_o)
-  prop_turn = copy.copy(turn)
+  prop_board = copy.deepcopy(board)
   position = None
-  if turn == 'X':
-    position = input(player_x.name + ', what is your move? ')
+  if prop_board.turn == 'X':
+    position = input(prop_player_x.name + ', what is your move? ')
   else:
-    position = input(player_o.name + ', what is your move? ')
+    position = input(prop_player_o.name + ', what is your move? ')
   try:
-    test_position = position.replace(",", "").replace(" ", "")
-    if test_position.isdigit() is False:
+    position = position.replace(",", "").replace(" ", "")
+    if position.isdigit() is False:
       print ('Invalid input!')
-      ask_move(prop_player_x, prop_player_o, prop_turn)
+      return ask_move(prop_player_x, prop_player_o, prop_board)
   except Exception as e:
     print (e)
-    ask_move(prop_player_x, prop_player_o, prop_turn)
-  temp_position = position.split(',')
-  try:
-    position = list(map(int, temp_position))
-  except Exception as e:
-    print (e)
+    return ask_move(prop_player_x, prop_player_o, prop_board)
+  position = list(map(int, position))
+  if position[0] < 0 or position[1] < 0 or position[1] >= prop_board.height or \
+    position[0] >= prop_board.width:
+    print ('Input is out of range!')
+    return ask_move(prop_player_x, prop_player_o, prop_board)
+  if prop_board.positions[position[0]][position[1]] != " ":
+    print ('Invalid action!')
+    return ask_move(prop_player_x, prop_player_o, prop_board)
   return position
 
 def main():
@@ -123,18 +125,18 @@ def main():
   player_x = Player('s') #input('X player, What is your name? '), 'X')
   player_o = Player('k') #input('O player, What is your name? '), 'O')
   board.turn = check_first_player()
-  while not board.is_finished():
-    board.last_move = ask_move(player_x, player_o, board.turn)
+  while not board.is_won() and not board.is_full():
+    board.last_move = ask_move(player_x, player_o, board)
     board.update()
     board.draw()
     board.change_turn()
-  if board.is_full():
-    print ("It's a tie!")
-  else:
+  if board.is_won():
     if board.turn == 'X':
       print (player_o.name + ' won!')
     else:
       print (player_x.name + ' won!')
+  elif board.is_full():
+    print ("It's a tie!")
 
 if __name__ == "__main__":
   main()
