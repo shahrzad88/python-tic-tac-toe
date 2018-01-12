@@ -118,12 +118,11 @@ def ask_move(player_x, player_o, board):
 def main():
   player_x = None
   player_o = None
-  #temp_dimensions = input('Enter board dimensions: ').split(',')
-  width = 3 #int(temp_dimensions[0])
-  height = 3 # int(temp_dimensions[1])
+  width = 3
+  height = 3
   board = Board(width, height)
-  player_x = Player('s') #input('X player, What is your name? '), 'X')
-  player_o = Player('k') #input('O player, What is your name? '), 'O')
+  player_x = Player('s')
+  player_o = Player('k')
   board.turn = check_first_player()
   while not board.is_won() and not board.is_full():
     board.last_move = ask_move(player_x, player_o, board)
